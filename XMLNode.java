@@ -22,6 +22,7 @@
 package org.rrlib.xml;
 
 import java.io.StringWriter;
+import java.util.Iterator;
 
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -495,6 +496,19 @@ public class XMLNode {
     }
 
     /**
+     * Use this way:
+     *
+     *  for (XMLNode child : root.children()) {
+     *    ...
+     *  }
+     *
+     * @return Object to iterate over XML node's children using foreach loop
+     */
+    public Iterable<XMLNode> children() {
+        return new ConstChildIterator();
+    }
+
+    /**
      * @return An end-iterator mark to mark the end of children traversal
      */
     public XMLNode getChildrenEnd() {
@@ -507,7 +521,7 @@ public class XMLNode {
      * Iteration should look like this:
      *  for (ConstChildIterator it = node.getChildrenBegin(); it.get() != node.getChildrenEnd(); it.next())
      */
-    public class ConstChildIterator {
+    public class ConstChildIterator implements Iterator<XMLNode>, Iterable<XMLNode> {
 
         private XMLNode current = getNextNode(node.getFirstChild());
 
@@ -530,11 +544,35 @@ public class XMLNode {
 
         /**
          * Advance to next node
+         *
+         * @return New current node (the one that we just moved to
          */
-        public void next() {
+        public XMLNode next() {
             current = getNextNode(current.node.getNextSibling());
+            return current;
         }
 
+        @Override
+        public boolean hasNext() {
+            Node nextNode = current.node.getNextSibling();
+            while (nextNode != null) {
+                if (nextNode.getNodeType() == Node.ELEMENT_NODE) {
+                    return true;
+                }
+                nextNode = nextNode.getNextSibling();
+            }
+            return false;
+        }
+
+        @Override
+        public void remove() {
+            throw new RuntimeException("Remove operation not supported");
+        }
+
+        @Override
+        public Iterator<XMLNode> iterator() {
+            return this;
+        }
     }
 
     /**
