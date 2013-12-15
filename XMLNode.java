@@ -183,8 +183,6 @@ public class XMLNode {
      * If the node contains plain text content this method grants access via
      * a String reference.
      *
-     * @exception XMLException is thrown if the node does not contain plain text content
-     *
      * @return A reference to the plain text content
      */
     public String getTextContent() throws XMLException {
@@ -195,7 +193,7 @@ public class XMLNode {
                 return n.getTextContent();
             }
         }
-        throw new XMLException("This node does not have any text content!");
+        return "";
     }
 
     /**
@@ -489,13 +487,6 @@ public class XMLNode {
     }
 
     /**
-     * @return An iterator to the first of this node's children which are XMLNodes themselves
-     */
-    public ConstChildIterator getChildrenBegin() {
-        return new ConstChildIterator();
-    }
-
-    /**
      * Use this way:
      *
      *  for (XMLNode child : root.children()) {
@@ -509,21 +500,14 @@ public class XMLNode {
     }
 
     /**
-     * @return An end-iterator mark to mark the end of children traversal
-     */
-    public XMLNode getChildrenEnd() {
-        return null;
-    }
-
-    /**
      * ChildIterator.
      *
      * Iteration should look like this:
      *  for (ConstChildIterator it = node.getChildrenBegin(); it.get() != node.getChildrenEnd(); it.next())
      */
-    public class ConstChildIterator implements Iterator<XMLNode>, Iterable<XMLNode> {
+    private class ConstChildIterator implements Iterator<XMLNode>, Iterable<XMLNode> {
 
-        private XMLNode current = getNextNode(node.getFirstChild());
+        private XMLNode next = getNextNode(node.getFirstChild());
 
         private XMLNode getNextNode(Node nextNode) {
             while (nextNode != null) {
@@ -536,32 +520,19 @@ public class XMLNode {
         }
 
         /**
-         * @return Current node
-         */
-        public XMLNode get() {
-            return current;
-        }
-
-        /**
          * Advance to next node
          *
          * @return New current node (the one that we just moved to
          */
         public XMLNode next() {
-            current = getNextNode(current.node.getNextSibling());
+            XMLNode current = next;
+            next = getNextNode(next.node.getNextSibling());
             return current;
         }
 
         @Override
         public boolean hasNext() {
-            Node nextNode = current.node.getNextSibling();
-            while (nextNode != null) {
-                if (nextNode.getNodeType() == Node.ELEMENT_NODE) {
-                    return true;
-                }
-                nextNode = nextNode.getNextSibling();
-            }
-            return false;
+            return next != null;
         }
 
         @Override
@@ -580,7 +551,7 @@ public class XMLNode {
      */
     public int childCount() {
         int i = 0;
-        for (ConstChildIterator it = getChildrenBegin(); it.get() != getChildrenEnd(); it.next()) {
+        for (@SuppressWarnings("unused") XMLNode child : children()) {
             i++;
         }
         return i;
