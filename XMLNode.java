@@ -420,6 +420,16 @@ public class XMLNode {
     }
 
     /**
+     * @return Parent node
+     */
+    public XMLNode getParent() {
+        if (this.node.getParentNode() instanceof Element) {
+            return new XMLNode(doc, (Element)this.node.getParentNode());
+        }
+        return null;
+    }
+
+    /**
      * Set an XML attribute of this node
      *
      * This methods sets the attribute with the given name to the given value.
