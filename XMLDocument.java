@@ -173,7 +173,7 @@ public class XMLDocument {
      * Write the XML document to a file
      *
      * This method creates or truncates a file with the given name and writes
-     * the documents XML representation into it.
+     * the document's XML representation into it.
      *
      * @param fileName     The name of the file to use
      * @param format       Format output?
@@ -188,7 +188,7 @@ public class XMLDocument {
      * Write the XML document to a file
      *
      * This method creates or truncates a file with the given name and writes
-     * the documents XML representation into it.
+     * the document's XML representation into it.
      *
      * @param fileName     The name of the file to use
      */
@@ -199,15 +199,28 @@ public class XMLDocument {
     /**
      * Write the XML document to a stream
      *
+     * This method writes the document's XML representation to the specified stream
+     *
+     * @param stream       The stream to write to
+     * @param format       Format output?
+     */
+    public void writeToStream(StreamResult stream, boolean format) throws Exception {
+        writeToStream(stream, format, new DOMSource(document));
+    }
+
+    /**
+     * Write the XML document to a stream
+     *
      * @param result   StreamResult
      * @param format   Format output?
      */
-    public static void writeToStream(StreamResult result, boolean format, DOMSource source) throws Exception {
+    static void writeToStream(StreamResult result, boolean format, DOMSource source) throws Exception {
         TransformerFactory factory = TransformerFactory.newInstance();
         factory.setAttribute("indent-number", 2);
         Transformer transformer = factory.newTransformer();
         if (format) {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         }
         transformer.transform(source, result);
     }

@@ -212,7 +212,9 @@ public class XMLNode {
             }
         }
         removeTextContent();
-        node.appendChild(doc.createTextNode(content));
+        if (content != null) {
+            node.appendChild(doc.createTextNode(content));
+        }
     }
 
     /**
