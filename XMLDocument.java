@@ -163,7 +163,7 @@ public class XMLDocument {
         if (rootNode != null) {
             throw new XMLException("Root node already exists");
         }
-        Element root = document.createElement("root");
+        Element root = document.createElement(name);
         document.appendChild(root);
         rootNode = new XMLNode(document, root);
         return rootNode;
