@@ -87,6 +87,10 @@ public class XMLDocument {
     public XMLDocument(String fileName, boolean validate) throws XMLException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
+            if (!validate) {
+                factory.setValidating(false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            }
             DocumentBuilder dbuilder = factory.newDocumentBuilder();
             document = dbuilder.parse(fileName);
             rootNode = new XMLNode(document, document.getDocumentElement());
@@ -126,6 +130,10 @@ public class XMLDocument {
     public XMLDocument(InputSource input, boolean validate) throws XMLException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
+            if (!validate) {
+                factory.setValidating(false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            }
             DocumentBuilder dbuilder = factory.newDocumentBuilder();
             document = dbuilder.parse(input);
             rootNode = new XMLNode(document, document.getDocumentElement());
